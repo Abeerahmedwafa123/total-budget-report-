@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Monglish AI Apps — 3D Portfolio Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&family=Great+Vibes&display=swap" rel="stylesheet">
+<style>
+  :root{--blue:#1B5C87;--navy:#0c1f38;--navy2:#16284f;--orange:#EE7D23;--orange-d:#D8631A;--ink:#0e1b33;--line:#e3e8f2;--green:#34d39a;}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;overflow:hidden;font-family:Inter,system-ui,sans-serif;background:#0a1830;color:#fff}
+  #bg{position:fixed;inset:0;z-index:0;display:block}
+  .blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.55;z-index:1;pointer-events:none;animation:float 14s ease-in-out infinite}
+  .blob.b1{width:420px;height:420px;background:#1B5C87;top:-120px;left:-90px}
+  .blob.b2{width:380px;height:380px;background:#EE7D23;bottom:-140px;right:-80px;animation-delay:-5s}
+  .blob.b3{width:300px;height:300px;background:#2f7fb0;top:40%;left:55%;animation-delay:-9s}
+  @keyframes float{0%,100%{transform:translateY(0) translateX(0)}50%{transform:translateY(-40px) translateX(30px)}}
+  .grain{position:fixed;inset:0;z-index:2;opacity:.06;pointer-events:none}
+  .frame{position:fixed;inset:0;border:10px solid var(--orange);z-index:30;pointer-events:none;opacity:.9}
+
+  .ghost{position:fixed;top:46%;left:50%;transform:translate(-50%,-50%);font-family:Anton,sans-serif;
+         font-size:clamp(90px,30vw,420px);color:rgba(255,255,255,.045);letter-spacing:.02em;white-space:nowrap;z-index:1;pointer-events:none;user-select:none}
+
+  header{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:20px 34px}
+  .brand{display:flex;align-items:center;gap:14px}
+  .brand img{height:46px}
+  .brand .sub{font-size:12px;color:#bcd4e6;border-left:1px solid rgba(255,255,255,.25);padding-left:14px;line-height:1.3}
+  .brand .sub b{color:#fff}
+  .pill{background:var(--orange);color:#10243a;font-weight:800;letter-spacing:.12em;font-size:12px;padding:9px 20px;border-radius:999px;text-transform:uppercase}
+
+  /* stage */
+  .stage{position:fixed;inset:0;z-index:10;display:flex;align-items:center;justify-content:center;perspective:1600px}
+  .deck{position:relative;width:340px;height:430px;transform-style:preserve-3d}
+  .ccard{position:absolute;top:0;left:0;width:340px;height:430px;border-radius:22px;cursor:pointer;
+         transition:transform .65s cubic-bezier(.4,0,.2,1),opacity .65s cubic-bezier(.4,0,.2,1),filter .65s cubic-bezier(.4,0,.2,1);
+         background:linear-gradient(160deg,rgba(255,255,255,.97),rgba(238,246,252,.97));color:var(--ink);
+         box-shadow:0 30px 60px rgba(0,0,0,.45);overflow:hidden;border:1px solid rgba(255,255,255,.6);backface-visibility:hidden}
+  .ccard .top{height:96px;display:flex;align-items:center;gap:12px;padding:0 20px;color:#fff}
+  .ccard .ico{font-size:34px;filter:drop-shadow(0 3px 5px rgba(0,0,0,.3))}
+  .ccard .nm{font-weight:800;font-size:18px;line-height:1.15}
+  .ccard .grp{font-size:10.5px;text-transform:uppercase;letter-spacing:.12em;opacity:.9;margin-bottom:2px}
+  .ccard .body{padding:16px 20px}
+  .row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px dashed #d9e2ee;font-size:14px}
+  .row:last-child{border-bottom:0}
+  .row .k{color:#5b6b7d} .row .v{font-weight:700;color:var(--navy2)}
+  .row .v.profit{color:#0c7a43} .row .v.cost{color:var(--orange-d)}
+  .ccard .hint{position:absolute;bottom:12px;left:0;right:0;text-align:center;font-size:10.5px;color:#8aa;letter-spacing:.05em}
+  .ccard .lensicon{position:absolute;top:12px;right:14px;font-size:16px;opacity:.65}
+
+  /* nav */
+  .arrows{position:fixed;bottom:96px;left:0;right:0;z-index:25;display:flex;justify-content:center;gap:22px}
+  .arrow{width:56px;height:56px;border-radius:50%;border:2px solid rgba(255,255,255,.6);background:rgba(255,255,255,.08);
+         color:#fff;font-size:22px;cursor:pointer;backdrop-filter:blur(6px);transition:.2s;display:flex;align-items:center;justify-content:center}
+  .arrow:hover{background:var(--orange);border-color:var(--orange);transform:scale(1.08)}
+  .dots{position:fixed;bottom:70px;left:0;right:0;z-index:25;display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:0 20px}
+  .dot{width:9px;height:9px;border-radius:50%;background:rgba(255,255,255,.3);cursor:pointer;transition:.2s}
+  .dot.on{background:var(--orange);width:24px;border-radius:6px}
+
+  /* totals + signature footer */
+  .footer{position:fixed;bottom:0;left:0;right:0;z-index:20;display:flex;align-items:flex-end;justify-content:space-between;padding:14px 30px;pointer-events:none}
+  .totals{display:flex;gap:18px}
+  .tcell .tv{font-family:Anton,sans-serif;font-size:22px;color:#fff;line-height:1}
+  .tcell .tl{font-size:9.5px;color:#bcd4e6;text-transform:uppercase;letter-spacing:.5px}
+  .tcell .tv.g{color:var(--green)} .tcell .tv.o{color:#ffc78a}
+  .sign{text-align:right}
+  .sign .nmsig{font-family:'Great Vibes',cursive;font-size:30px;color:#ffd9b0;line-height:.9}
+  .sign .ttl{font-size:10.5px;color:#cfe0ee;margin-top:2px}
+
+  /* LENS modal */
+  .lens{position:fixed;inset:0;z-index:60;background:rgba(6,16,30,.78);backdrop-filter:blur(8px);display:none;align-items:center;justify-content:center;padding:24px}
+  .lens.open{display:flex;animation:fade .25s ease}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .lenscard{width:min(560px,94vw);background:#fff;color:var(--ink);border-radius:24px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.6);transform:scale(.85);animation:pop .4s cubic-bezier(.34,1.56,.64,1) forwards}
+  @keyframes pop{to{transform:scale(1)}}
+  .lenscard .lhead{padding:26px 30px;color:#fff;display:flex;align-items:center;gap:16px}
+  .lenscard .lico{font-size:50px}
+  .lenscard .lnm{font-size:27px;font-weight:800;line-height:1.1}
+  .lenscard .lgrp{font-size:12px;text-transform:uppercase;letter-spacing:.14em;opacity:.92}
+  .lenscard .lbody{padding:22px 30px 8px}
+  .lrow{display:flex;justify-content:space-between;padding:14px 0;border-bottom:1px solid #eef2f7;font-size:18px}
+  .lrow .lk{color:#5b6b7d} .lrow .lv{font-weight:800;color:var(--navy2);font-size:20px}
+  .lrow .lv.profit{color:#0c7a43} .lrow .lv.cost{color:var(--orange-d)}
+  .ldesc{padding:6px 30px 24px;color:#46586c;font-size:14px;line-height:1.6}
+  .lclose{position:absolute;top:18px;right:22px;font-size:26px;color:#fff;cursor:pointer;opacity:.85;z-index:2}
+  .lensbadge{display:inline-block;margin:0 30px 18px;background:#fdeede;color:var(--orange-d);font-size:11px;font-weight:700;padding:5px 12px;border-radius:999px}
+  @media(max-width:640px){.deck{transform:scale(.62)}.brand .sub{display:none}.totals{display:none}}
+
+  /* Detailed report button + overlay */
+  .topbtns{position:fixed;top:22px;left:50%;transform:translateX(-50%);z-index:26;display:flex;gap:12px}
+  .pdfbtn{background:rgba(255,255,255,.10);border:2px solid var(--orange);color:#fff;font-weight:800;font-size:13px;
+          letter-spacing:.06em;padding:11px 22px;border-radius:999px;cursor:pointer;backdrop-filter:blur(6px);transition:.2s}
+  .pdfbtn:hover{background:var(--orange);color:#10243a;transform:scale(1.05)}
+  /* budget buckets */
+  .bgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:16px}
+  @media(max-width:820px){.bgrid{grid-template-columns:1fr}}
+  .bcard{border-radius:18px;padding:22px;color:#fff;box-shadow:0 18px 46px rgba(0,0,0,.4);display:flex;flex-direction:column}
+  .bcard.b-blue{background:linear-gradient(150deg,#16284f,#1B5C87)}
+  .bcard.b-teal{background:linear-gradient(150deg,#0e6b74,#16a0a0)}
+  .bcard.b-orange{background:linear-gradient(150deg,#9a4408,#EE7D23)}
+  .bcard .bico{font-size:42px;line-height:1}
+  .bcard .btitle{font-size:19px;font-weight:800;margin:10px 0 4px}
+  .bcard .bsub{font-size:11.5px;color:rgba(255,255,255,.85);line-height:1.5;margin-bottom:14px;min-height:50px}
+  .bitem{display:flex;justify-content:space-between;gap:12px;font-size:12.5px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.18);font-weight:600}
+  .bitem .bv{font-weight:800;white-space:nowrap}
+  .bcard .bttl{margin-top:auto;padding-top:14px;font-family:Anton,sans-serif;font-size:38px;line-height:1}
+  .bcard .bttll{font-size:10px;text-transform:uppercase;letter-spacing:.5px;opacity:.9}
+  .grand{background:rgba(255,255,255,.97);color:var(--ink);border-radius:16px;padding:22px;text-align:center;box-shadow:0 18px 46px rgba(0,0,0,.4);margin-bottom:16px}
+  .grand .gv{font-family:Anton,sans-serif;font-size:58px;color:var(--orange-d);line-height:1}
+  .grand .gl{font-size:13px;color:#5b6b7d;text-transform:uppercase;letter-spacing:.6px;margin-top:4px}
+  .detailed{position:fixed;inset:0;z-index:55;overflow-y:auto;display:none;padding:24px}
+  .detailed.open{display:block;animation:fade .3s ease}
+  .dwrap{max-width:1040px;margin:0 auto}
+  .dtopbar{display:flex;align-items:center;justify-content:space-between;padding:8px 4px 18px}
+  .dtopbar .dl{display:flex;align-items:center;gap:14px}
+  .dtopbar .dl img{height:46px}
+  .dtopbar .dl .dt{color:#fff;font-weight:800;font-size:18px;line-height:1.1}
+  .dtopbar .dl .ds{color:#bcd4e6;font-size:11px}
+  .dbtns{display:flex;gap:10px}
+  .dprint,.dclose{border:2px solid rgba(255,255,255,.6);background:rgba(255,255,255,.08);color:#fff;font-weight:700;
+          font-size:13px;padding:9px 16px;border-radius:10px;cursor:pointer;backdrop-filter:blur(6px);transition:.2s}
+  .dprint:hover{background:#0c7a43;border-color:#0c7a43} .dclose:hover{background:#c0331b;border-color:#c0331b}
+  .dpanel{background:rgba(255,255,255,.97);color:var(--ink);border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 18px 46px rgba(0,0,0,.4)}
+  .dpanel h2{color:var(--blue);font-size:14px;text-transform:uppercase;letter-spacing:.5px;margin:0 0 12px;border-bottom:3px solid var(--orange);display:inline-block;padding-bottom:3px}
+  .dkpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}@media(max-width:680px){.dkpis{grid-template-columns:repeat(2,1fr)}}
+  .dk{background:#f4f7fb;border-radius:10px;padding:12px;text-align:center}
+  .dk .v{font-size:22px;font-weight:800;color:var(--blue)} .dk .l{font-size:10px;color:#5b6b7d;text-transform:uppercase;letter-spacing:.4px;margin-top:3px}
+  .dk .v.g{color:#0c7a43} .dk .v.o{color:#D8631A}
+  .dvisa{border-radius:12px;padding:16px;margin-bottom:14px;color:#fff}
+  .dvisa.blue{background:linear-gradient(135deg,#16284f,#1B5C87)} .dvisa.orange{background:linear-gradient(135deg,#6b3410,#D8631A)}
+  .dvisa h3{margin:0 0 8px;font-size:15px} .dvisa .vg{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}@media(max-width:680px){.dvisa .vg{grid-template-columns:repeat(2,1fr)}}
+  .dvb{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:8px;padding:10px;text-align:center}
+  .dvb .vv{font-size:19px;font-weight:800} .dvb.hot .vv{color:#ffd9b0} .dvb .vl{font-size:9.5px;color:#eaf1f8;text-transform:uppercase;letter-spacing:.3px;margin-top:2px}
+  .dt2{width:100%;border-collapse:collapse;font-size:14px;font-weight:600}
+  .dt2 th{background:var(--blue);color:#fff;padding:10px 11px;text-align:left;font-size:12.5px;font-weight:800;letter-spacing:.02em}
+  .dt2 td{border:1px solid var(--line);padding:10px 11px;color:#1d2c3e;font-weight:600} .dt2 tr:nth-child(odd) td{background:#f8fafd}
+  .dt2 .grp td{background:#FBE0C4!important;color:#9a4408;font-weight:800;font-size:13.5px;letter-spacing:.02em} .dt2 .tot td{background:#16284f!important;color:#fff;font-weight:800;font-size:14px}
+  .dt2 .pos{color:#0c7a43;font-weight:700} .dt2 .cost{color:#D8631A;font-weight:700} .dt2 .mut{color:#5b6b7d}
+  .dnote{font-size:11px;color:#33475c;background:#f4f7fb;border-left:4px solid var(--orange);padding:8px 11px;border-radius:4px;margin-top:8px;line-height:1.5}
+  .dsign{text-align:right;padding:6px 6px 30px}
+  .dsign .nmsig{font-family:'Great Vibes',cursive;font-size:34px;color:#ffd9b0;line-height:.9}
+  .dsign .ttl{font-size:11px;color:#cfe0ee;margin-top:3px}
+  @media print{
+    @page{margin:12mm}
+    html,body{overflow:visible!important;height:auto!important;background:#fff!important}
+    #bg,.blob,.grain,.frame,.ghost,header,.stage,.arrows,.dots,.footer,.lens,.topbtns,.dprint,.dclose{display:none!important}
+    .detailed:not(.open){display:none!important}
+    .detailed.open{position:static!important;display:block!important;padding:0!important;overflow:visible!important}
+    .bcard{background:#fff!important;color:#0e1b33!important;border:2px solid var(--orange);box-shadow:none!important}
+    .bcard .bsub{color:#5b6b7d!important} .bitem{border-color:#eee!important} .bcard .bttl{color:#D8631A!important}
+    .dtopbar .dl .dt,.dtopbar .dl .ds{color:#0e1b33!important}
+    .dpanel{box-shadow:none!important;border:1px solid #e3e8f2}
+    .dsign .nmsig{color:#D8631A!important} .dsign .ttl{color:#5b6b7d!important}
+  }
+  .hl{display:inline-block;background:rgba(238,125,35,.95);color:#fff;font-weight:800;padding:3px 9px;border-radius:7px;margin:3px 3px 0 0;font-size:11.5px;box-shadow:0 2px 6px rgba(0,0,0,.2)}
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div>
+<svg class="grain"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+<div class="ghost">AI&nbsp;APPS</div>
+<div class="frame"></div>
+
+<header>
+  <div class="brand">
+    <img src="data:image/png;base64,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" alt="Monglish"/>
+    <span class="sub">AI Apps Portfolio<br><b>Cost · Subscription · Profit</b></span>
+  </div>
+  <div class="pill">YOUR WAY TO | FLUENCY</div>
+</header>
+
+<div class="topbtns"><button class="pdfbtn" id="pdfBtn">📄 Detailed Report</button><button class="pdfbtn" id="budgetBtn">💰 Requested Budget</button></div>
+<div class="stage"><div class="deck" id="deck"></div></div>
+
+<div class="arrows">
+  <div class="arrow" id="prev">&#8592;</div>
+  <div class="arrow" id="next">&#8594;</div>
+</div>
+<div class="dots" id="dots"></div>
+
+<div class="footer">
+  <div class="totals">
+    <div class="tcell"><div class="tv">$4,750</div><div class="tl">Revenue / mo</div></div>
+    <div class="tcell"><div class="tv o">$461</div><div class="tl">Cost / mo</div></div>
+    <div class="tcell"><div class="tv g">$4,289</div><div class="tl">Net profit / mo</div></div>
+    <div class="tcell"><div class="tv">$175</div><div class="tl">Google Visa / mo</div></div>
+  </div>
+  <div class="sign">
+    <div class="nmsig">Dr. Abir Wafa</div>
+    <div class="ttl">Head of EdTech &amp; Instructional Design · Monglish International Academy</div>
+  </div>
+</div>
+
+<div class="detailed" id="budget">
+  <div class="dwrap">
+    <div class="dtopbar">
+      <div class="dl"><div><div class="dt">Requested Monthly Budget</div><div class="ds">Three priorities — Launch · Subscriptions · Research · June 2026</div></div></div>
+      <div class="dbtns"><button class="dprint" id="bPrint">🖨️ Save as PDF</button><button class="dclose" id="bClose">✕ Close</button></div>
+    </div>
+    <div class="bgrid">
+      <div class="bcard b-blue">
+        <div class="bico">🚀</div>
+        <div class="btitle">Launch the Essential Apps</div>
+        <div class="bsub">Powers every Gemini-based app. Without this funding the apps do not run — and the projected ROI cannot be achieved.</div>
+        <div class="bitem"><span>Google AI Studio — HomeSpark · MONGIZ · Business English · Asespert · Skill Scope</span><span class="bv">$170</span></div>
+        <div class="bttl">$170</div><div class="bttll">/ month · essential</div>
+      </div>
+      <div class="bcard b-teal">
+        <div class="bico">🔑</div>
+        <div class="btitle">Subscriptions</div>
+        <div class="bsub">The fixed platform subscriptions that keep the services online every month.</div>
+        <div class="bitem"><span>Google One — AI Plus (400 GB) · EGP 249.99</span><span class="bv">$5</span></div>
+        <div class="bitem"><span>Real-time Talking Avatar API — base plan</span><span class="bv">$19</span></div>
+        <div class="bttl">$24</div><div class="bttll">/ month</div>
+      </div>
+      <div class="bcard b-orange">
+        <div class="bico">🔬</div>
+        <div class="btitle">Explore &amp; Research</div>
+        <div class="bsub">R&amp;D budget for trialling new tools — currently Higgsfield, automating videos like never before.</div>
+        <div class="bitem"><span>New-app experimentation · Higgsfield video automation</span><span class="bv">$56</span></div>
+        <div class="bttl">$56</div><div class="bttll">/ month</div>
+      </div>
+    </div>
+    <div class="grand"><div class="gv">$250</div><div class="gl">Total requested budget / month — to keep funded on the company Visa</div></div>
+    <div class="dsign"><div class="nmsig">Dr. Abir Wafa</div><div class="ttl">Head of EdTech &amp; Instructional Design · Monglish International Academy</div></div>
+  </div>
+</div>
+<div class="detailed" id="detailed">
+  <div class="dwrap">
+    <div class="dtopbar">
+      <div class="dl"><div><div class="dt">AI Apps — Detailed Report</div><div class="ds">Cost · Subscription · Profit · Visa Funding · June 2026</div></div></div>
+      <div class="dbtns"><button class="dprint" id="dPrint">🖨️ Save as PDF</button><button class="dclose" id="dClose">✕ Close</button></div>
+    </div>
+
+    <div class="dpanel"><div class="dkpis">
+      <div class="dk"><div class="v">$4,750</div><div class="l">Revenue / month</div></div>
+      <div class="dk"><div class="v o">$461</div><div class="l">Cost to Academy / month</div></div>
+      <div class="dk"><div class="v g">$4,289</div><div class="l">Net profit / month</div></div>
+      <div class="dk"><div class="v g">~$51K</div><div class="l">Net profit / year</div></div>
+    </div></div>
+
+    <div class="dpanel">
+      <div class="dvisa blue"><h3>💳 Google AI Studio — Visa balance (starter set)</h3>
+        <div style="font-size:12px;color:#e9f1f9;margin-bottom:10px">Covers: <span class="hl">HomeSpark Book 1</span> <span class="hl">MONGIZ Book 1</span> <span class="hl">Business English Avatar</span> <span class="hl">Asespert</span> <span class="hl">Skill Scope AI</span></div>
+        <div class="vg">
+          <div class="dvb"><div class="vv">$82</div><div class="vl">API usage / mo (typical)</div></div>
+          <div class="dvb"><div class="vv">$107</div><div class="vl">+ $25 plan = total / mo</div></div>
+          <div class="dvb"><div class="vv">$160</div><div class="vl">Heavy month</div></div>
+          <div class="dvb hot"><div class="vv">$175</div><div class="vl">Recommended / mo (~$2,100/yr)</div></div>
+        </div></div>
+    </div>
+
+    <div class="dpanel">
+      <h2>💳 Requested Monthly Budget — to keep all services live</h2>
+      <p class="dnote" style="border-left-color:#c0331b;color:#7a1d10;background:#fdecea"><strong>These charges are ESSENTIAL.</strong> Without the Google AI Studio funding the apps stop working — and the projected ROI cannot be achieved.</p>
+      <table class="dt2">
+        <tr><th>Item</th><th>Purpose</th><th>Cost / month</th></tr>
+        <tr><td><strong>Google AI Studio — essential apps</strong><br><span style="color:#5b6b7d;font-weight:600">HomeSpark · MONGIZ · Business English · Asespert · Skill Scope</span></td><td>Powers all the Gemini-based apps. Without it they will not run and the expected ROI is lost.</td><td class="cost"><strong>$170</strong> · ESSENTIAL</td></tr>
+        <tr><td><strong>Google One — AI Plus (400 GB)</strong></td><td>Workspace storage &amp; account for the AI apps.</td><td class="cost">$5 <span style="color:#5b6b7d;font-weight:600">(EGP 249.99)</span></td></tr>
+        <tr><td><strong>Real-time Talking Avatar API</strong><br><span style="color:#5b6b7d;font-weight:600">premium video avatar — base plan</span></td><td>Subscription that powers the premium video talking avatar.</td><td class="cost">$19</td></tr>
+        <tr><td><strong>R&amp;D — new-app experimentation</strong><br><span style="color:#5b6b7d;font-weight:600">currently Higgsfield · video automation</span></td><td>Essential for research &amp; development — testing new tools (now Higgsfield, for automating videos like never before). Includes the reallocated buffer to expand experimentation.</td><td class="cost">$56</td></tr>
+        <tr class="tot"><td>TOTAL REQUESTED BUDGET</td><td>Keep funded on the company Visa, every month</td><td>$250 / month</td></tr>
+      </table>
+      <p class="dnote">Fully allocated, no idle buffer: Google AI Studio $170 · Google One $5 · Real-time Avatar API $19 · <strong>R&amp;D / experimentation $56</strong> = <strong>$250 / month</strong>. The R&amp;D line now carries the spare budget so it can fund Higgsfield video automation and future tool trials. Google One = Google AI Plus 400 GB at EGP 249.99 ≈ $5 (1 USD ≈ 51.85 EGP, June 2026).</p>
+    </div>
+
+    <div class="dpanel">
+      <h2>All AI apps — each title in its own row</h2>
+      <table class="dt2">
+        <tr><th>App</th><th>Engine / model</th><th>Users</th><th>Subscription</th><th>Cost / mo</th><th>Profit / mo</th></tr>
+        <tr class="grp"><td colspan="6">HomeSpark — homework, lessons &amp; writing feedback (bundled in course)</td></tr>
+        <tr><td>HomeSpark Book 1</td><td>Gemini 2.5 Flash (text)</td><td>200</td><td>Bundled in course</td><td>~$10</td><td class="mut">cost absorbed</td></tr>
+        <tr><td>HomeSpark Book 2</td><td>Gemini 2.5 Flash (text)</td><td>200</td><td>Bundled in course</td><td>~$10</td><td class="mut">cost absorbed</td></tr>
+        <tr><td>HomeSpark Book 3</td><td>Gemini 2.5 Flash (text)</td><td>200</td><td>Bundled in course</td><td>~$10</td><td class="mut">cost absorbed</td></tr>
+        <tr class="grp"><td colspan="6">MONGIZ Talking Avatar — real-time voice practice (A1–B1)</td></tr>
+        <tr><td>MONGIZ Talking Avatar Book 1</td><td>Gemini Live audio (voice)</td><td>50</td><td>$10 / month</td><td class="cost">$17</td><td class="pos">$483</td></tr>
+        <tr><td>MONGIZ Talking Avatar Book 2</td><td>Gemini Live audio (voice)</td><td>50</td><td>$10 / month</td><td class="cost">$17</td><td class="pos">$483</td></tr>
+        <tr><td>MONGIZ Talking Avatar Book 3</td><td>Gemini Live audio (voice)</td><td>50</td><td>$10 / month</td><td class="cost">$17</td><td class="pos">$483</td></tr>
+        <tr class="grp"><td colspan="6">Talking avatars &amp; teacher tools</td></tr>
+        <tr><td>Business English Classic Talking Avatar (3 levels)</td><td>Gemini Live audio (voice)</td><td>150</td><td>$15 / month</td><td class="cost">$52</td><td class="pos">$2,198</td></tr>
+        <tr><td>Premium Real-time Talking Avatar (video)</td><td>Real-time Talking Avatar API</td><td>50</td><td>$20 / month</td><td class="cost">$325</td><td class="pos">$675</td></tr>
+        <tr><td>Asespert — Teacher Self-Assessment</td><td>Gemini 3 Flash (text)</td><td>200</td><td>Internal PD</td><td class="cost">$1.50</td><td class="mut">—</td></tr>
+        <tr><td>Skill Scope AI — teacher profile &amp; plan</td><td>Gemini 3 Flash (text)</td><td>200</td><td>Internal PD</td><td class="cost">$1.50</td><td class="mut">—</td></tr>
+        <tr class="tot"><td>TOTAL</td><td>—</td><td>—</td><td>—</td><td>~$461</td><td>$4,289 net</td></tr>
+      </table>
+      <p class="dnote">Net profit = subscription revenue ($4,750) minus every app's running cost ($461). HomeSpark and the teacher tools carry cost only — their value sits inside the course fee and PD programme. Figures assume each title serves its own cohort at the validated rates; if learners use more than one book, totals are lower.</p>
+    </div>
+
+    <div class="dpanel">
+      <h2>Verified cost basis (official rates, June 2026)</h2>
+      <table class="dt2">
+        <tr><th>Engine / model</th><th>Rate</th></tr>
+        <tr><td>Real-time Talking Avatar API (video, FULL mode)</td><td>$0.20 / minute</td></tr>
+        <tr><td>Gemini Live audio (voice avatars)</td><td>$3 in / $12 out per 1M ($0.005 / $0.018 per min)</td></tr>
+        <tr><td>Gemini 2.5 Flash (HomeSpark text/image)</td><td>$0.30 in / $2.50 out per 1M</td></tr>
+        <tr><td>Gemini 3 Flash (Asespert · Skill Scope text)</td><td>$0.50 in / $3.00 out per 1M</td></tr>
+      </table>
+      <p class="dnote">Sources: Google official pricing (ai.google.dev/gemini-api/docs/pricing) and the real-time talking avatar API documentation, verified June 2026. Preview models may change price before they stabilise; figures exclude payment-processing fees (~$0.75/subscriber).</p>
+    </div>
+
+    <div class="dsign"><div class="nmsig">Dr. Abir Wafa</div><div class="ttl">Head of EdTech &amp; Instructional Design · Monglish International Academy</div></div>
+  </div>
+</div>
+<div class="lens" id="lens">
+  <div class="lenscard" id="lenscard"></div>
+</div>
+
+<script>
+const APPS = [
+ {nm:'HomeSpark — Book 1',grp:'Homework & lessons',ico:'📗',c1:'#1B5C87',c2:'#2f7fb0',engine:'Gemini 2.5 Flash (text)',users:'200',sub:'Bundled in course',cost:'~$10/mo',profit:'Cost absorbed',desc:'Homework, lessons and AI writing feedback. Default units are pre-generated (no API cost); only custom lessons and writing assessments call the model.'},
+ {nm:'HomeSpark — Book 2',grp:'Homework & lessons',ico:'📗',c1:'#1B5C87',c2:'#2f7fb0',engine:'Gemini 2.5 Flash (text)',users:'200',sub:'Bundled in course',cost:'~$10/mo',profit:'Cost absorbed',desc:'Second-level homework companion. Same low-cost design — pre-generated content is free, AI feedback is fractions of a cent per submission.'},
+ {nm:'HomeSpark — Book 3',grp:'Homework & lessons',ico:'📗',c1:'#1B5C87',c2:'#2f7fb0',engine:'Gemini 2.5 Flash (text)',users:'200',sub:'Bundled in course',cost:'~$10/mo',profit:'Cost absorbed',desc:'Third-level homework companion. Value delivered inside the course fee; the AI cost is negligible.'},
+ {nm:'MONGIZ Avatar — Book 1',grp:'Voice talking avatar · A1–B1',ico:'🎙️',c1:'#15788a',c2:'#1aa0a8',engine:'Gemini Live audio (voice)',users:'50',sub:'$10 / month',cost:'$17/mo',profit:'$483/mo',desc:'Real-time voice practice buddy. 30 minutes per learner per month. Voice-only, so it costs a fraction of a cent per minute.'},
+ {nm:'MONGIZ Avatar — Book 2',grp:'Voice talking avatar · A1–B1',ico:'🎙️',c1:'#15788a',c2:'#1aa0a8',engine:'Gemini Live audio (voice)',users:'50',sub:'$10 / month',cost:'$17/mo',profit:'$483/mo',desc:'Second-level voice practice. Same economics — 97% margin at $10 per learner.'},
+ {nm:'MONGIZ Avatar — Book 3',grp:'Voice talking avatar · A1–B1',ico:'🎙️',c1:'#15788a',c2:'#1aa0a8',engine:'Gemini Live audio (voice)',users:'50',sub:'$10 / month',cost:'$17/mo',profit:'$483/mo',desc:'Third-level voice practice. Adds another $483/month at near-zero cost.'},
+ {nm:'Business English Avatar',grp:'Classic talking avatar · 3 levels',ico:'💼',c1:'#0c7a43',c2:'#16a35a',engine:'Gemini Live audio (voice)',users:'150',sub:'$15 / month',cost:'$52/mo',profit:'$2,198/mo',desc:'Elementary, Pre-Intermediate and Intermediate. 50 learners per level, 30 minutes each. The portfolio profit engine — 98% margin.'},
+ {nm:'Premium Video Avatar',grp:'Katya / Graham · live video',ico:'🎬',c1:'#D8631A',c2:'#EE7D23',engine:'Real-time Talking Avatar API',users:'50',sub:'$20 / month',cost:'$325/mo',profit:'$675/mo',desc:'Premium lip-synced video avatar. Streams real video ($0.20/min), billed on a separate card. Best for the flagship demo and B2B clients.'},
+ {nm:'Asespert',grp:'Teacher self-assessment',ico:'📊',c1:'#5b6b7d',c2:'#7a8aa0',engine:'Gemini 3 Flash (text)',users:'200',sub:'Internal PD',cost:'$1.50/mo',profit:'PD tool',desc:'Cambridge-framework teacher self-assessment report. One text call per assessment — about three-quarters of a cent each.'},
+ {nm:'Skill Scope AI',grp:'Teacher profile & action plan',ico:'🧭',c1:'#5b6b7d',c2:'#7a8aa0',engine:'Gemini 3 Flash (text)',users:'200',sub:'Internal PD',cost:'$1.50/mo',profit:'PD tool',desc:'Generates a teacher profile, action plan and encouragement. Negligible cost across all 200 teachers.'}
+];
+
+const deck=document.getElementById('deck'), dotsEl=document.getElementById('dots');
+let active=0, animating=false;
+const N=APPS.length;
+
+// build cards
+APPS.forEach((a,i)=>{
+  const el=document.createElement('div'); el.className='ccard'; el.dataset.i=i;
+  el.innerHTML=`<div class="top" style="background:linear-gradient(135deg,${a.c1},${a.c2})">
+      <div class="ico">${a.ico}</div><div><div class="grp">${a.grp}</div><div class="nm">${a.nm}</div></div></div>
+    <div class="lensicon">🔍</div>
+    <div class="body">
+      <div class="row"><span class="k">Engine</span><span class="v">${a.engine}</span></div>
+      <div class="row"><span class="k">Users</span><span class="v">${a.users}</span></div>
+      <div class="row"><span class="k">Subscription</span><span class="v">${a.sub}</span></div>
+      <div class="row"><span class="k">Cost / month</span><span class="v cost">${a.cost}</span></div>
+      <div class="row"><span class="k">Profit / month</span><span class="v profit">${a.profit}</span></div>
+    </div><div class="hint">click for the reading lens 🔍</div>`;
+  el.addEventListener('click',()=>{ if(i===active) openLens(i); else { active=i; render(); } });
+  deck.appendChild(el);
+  const d=document.createElement('div'); d.className='dot'; d.addEventListener('click',()=>{active=i;render();}); dotsEl.appendChild(d);
+});
+const cards=[...deck.children], dots=[...dotsEl.children];
+
+function render(){
+  cards.forEach((el,i)=>{
+    let d=i-active; if(d>N/2)d-=N; if(d<-N/2)d+=N;
+    const ad=Math.abs(d);
+    let x=d*250, ry=-d*34, sc=1-ad*0.16, tz=-ad*150, op=ad>2?0:1-ad*0.22, bl=ad*0.7;
+    el.style.transform=`translateX(${x}px) translateZ(${tz}px) rotateY(${ry}deg) scale(${sc})`;
+    el.style.opacity=op; el.style.filter=`blur(${bl}px)`;
+    el.style.zIndex=100-ad; el.style.pointerEvents=ad>2?'none':'auto';
+  });
+  dots.forEach((d,i)=>d.classList.toggle('on',i===active));
+}
+function go(dir){ if(animating)return; animating=true; active=(active+dir+N)%N; render(); setTimeout(()=>animating=false,660); }
+document.getElementById('next').onclick=()=>go(1);
+document.getElementById('prev').onclick=()=>go(-1);
+document.addEventListener('keydown',e=>{ if(e.key==='ArrowRight')go(1); if(e.key==='ArrowLeft')go(-1); if(e.key==='Escape')closeLens(); });
+
+// LENS
+const lens=document.getElementById('lens'), lc=document.getElementById('lenscard');
+function openLens(i){
+  const a=APPS[i];
+  lc.innerHTML=`<span class="lclose" onclick="closeLens()">&times;</span>
+    <div class="lhead" style="background:linear-gradient(135deg,${a.c1},${a.c2})">
+      <div class="lico">${a.ico}</div><div><div class="lgrp">${a.grp}</div><div class="lnm">${a.nm}</div></div></div>
+    <div class="lbody">
+      <div class="lrow"><span class="lk">Engine / model</span><span class="lv">${a.engine}</span></div>
+      <div class="lrow"><span class="lk">Users</span><span class="lv">${a.users}</span></div>
+      <div class="lrow"><span class="lk">Subscription</span><span class="lv">${a.sub}</span></div>
+      <div class="lrow"><span class="lk">Cost to Academy / month</span><span class="lv cost">${a.cost}</span></div>
+      <div class="lrow"><span class="lk">Profit / month</span><span class="lv profit">${a.profit}</span></div>
+    </div>
+    <div class="lensbadge">VERIFIED COST BASIS · JUNE 2026</div>
+    <div class="ldesc">${a.desc}</div>`;
+  lens.classList.add('open');
+}
+function closeLens(){ lens.classList.remove('open'); }
+lens.addEventListener('click',e=>{ if(e.target===lens) closeLens(); });
+
+render();
+let auto=setInterval(()=>go(1),4200);
+document.querySelector('.stage').addEventListener('mouseenter',()=>clearInterval(auto));
+
+// 3D particle background
+const cv=document.getElementById('bg'), ctx=cv.getContext('2d'); let W,H,parts=[];
+function resize(){ W=cv.width=innerWidth; H=cv.height=innerHeight; }
+addEventListener('resize',resize); resize();
+for(let i=0;i<130;i++) parts.push({x:Math.random()*W,y:Math.random()*H,z:Math.random()*1+0.2,r:Math.random()*2+0.6,o:'#'+(Math.random()>0.8?'EE7D23':'7fb3d5')});
+function draw(){
+  ctx.clearRect(0,0,W,H);
+  const g=ctx.createLinearGradient(0,0,W,H); g.addColorStop(0,'#0a1830'); g.addColorStop(1,'#0c2440');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,H);
+  parts.forEach(p=>{ p.y-=p.z*0.4; if(p.y<-5){p.y=H+5;p.x=Math.random()*W;}
+    ctx.globalAlpha=0.15+p.z*0.4; ctx.fillStyle=p.o; ctx.beginPath(); ctx.arc(p.x,p.y,p.r*p.z,0,7); ctx.fill(); });
+  ctx.globalAlpha=1; requestAnimationFrame(draw);
+}
+
+// Detailed report overlay
+const detailed=document.getElementById('detailed');
+const budget=document.getElementById('budget');
+document.getElementById('pdfBtn').onclick=()=>{ budget.classList.remove('open'); detailed.classList.add('open'); };
+document.getElementById('budgetBtn').onclick=()=>{ detailed.classList.remove('open'); budget.classList.add('open'); };
+document.getElementById('dClose').onclick=()=>detailed.classList.remove('open');
+document.getElementById('bClose').onclick=()=>budget.classList.remove('open');
+document.getElementById('dPrint').onclick=()=>window.print();
+document.getElementById('bPrint').onclick=()=>window.print();
+draw();
+</script>
+</body>
+</html>
